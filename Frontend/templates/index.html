@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LG Electronics</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    
+    <header>
+        <div class="header-logo">
+            <img src="{{ url_for('static', filename='img/lg_logo.png') }}" alt="LG Logo" width="100" height="100">
+        </div>
+    </header>
+
+    
+    <section class="status-section">
+        <div id="status-box" class="status-box mismatch">
+            <span id="status-text">Carregando...</span> 
+        </div>
+    </section>
+
+    
+    <section class="queue-section">
+        <div class="queue-header">
+            <h3>LAST WIP / SET IDS</h3>
+        </div>
+        <div class="queue-items" id="queue-items">
+            
+        </div>
+    </section>
+
+    <button id="clear-history">APAGAR HISTÓRICO</button>
+
+    <!-- Blocos de leitura dos scanners -->
+    <section id="scanner-readings" class="scanner-readings">
+        <div id="scanner1-block" class="scanner-block">
+            <h3>Scanner 1</h3>
+            <p id="scanner1-reading">Carregando...</p>
+        </div>
+        <div id="scanner2-block" class="scanner-block">
+            <h3>Scanner 2</h3>
+            <p id="scanner2-reading">Carregando...</p>
+        </div>
+    </section>
+
+    <!-- Popups de erro -->
+    <div id="scanner1-popup" class="popup"></div>
+    <div id="scanner2-popup" class="popup"></div>
+
+<script>
+    document.getElementById("clear-history").addEventListener("click", function() {
+        fetch('/api/clear-history', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // Mostra uma mensagem de sucesso ou erro
+        })
+        .catch(error => {
+            alert("Erro ao tentar apagar histórico!");
+            console.error("Erro:", error);
+        });
+    });
+
+    // Atualização em tempo real das leituras dos scanners
+    setInterval(function() {
+        fetch('/leituras')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("scanner1-reading").textContent = data.scanner1;
+            document.getElementById("scanner2-reading").textContent = data.scanner2;
+        })
+        .catch(error => {
+            console.error("Erro ao buscar leituras:", error);
+        });
+    }, 2000); // Atualiza a cada 2 segundos
+</script>
+
+    
+    <section class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>WIP</th>
+                    <th>SET ID</th>
+                    <th>RESULT</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                <!-- Conteúdo da Tabela -->
+            </tbody>
+        </table>
+    </section>
+
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
